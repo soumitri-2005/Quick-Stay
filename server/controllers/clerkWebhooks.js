@@ -21,27 +21,37 @@ const clerkWebhooks = async (req, res) => {
     const evt = wh.verify(payload, headers);
     const { id, email_addresses, first_name, last_name, image_url } = evt.data;
 
-    const userData = {
-      _id: id,
-      email: email_addresses?.[0]?.email_address || "",
-      username: `${first_name || ""} ${last_name || ""}`.trim(),
-      image: image_url,
-      role: "user", // 🔧 explicitly set to match enum
-      recentSearchedCities: [],
-    };
-
     console.log("✅ Clerk Webhook Event:", evt.type);
 
     switch (evt.type) {
-      case "user.created":
+      case "user.created": {
+        const userData = {
+          _id: id,
+          email: email_addresses?.[0]?.email_address || "",
+          username: `${first_name || ""} ${last_name || ""}`.trim(),
+          image: image_url,
+          role: "user", // 🔧 explicitly set to match enum
+          recentSearchedCities: [],
+        };
         await User.create(userData);
         break;
-      case "user.updated":
+      }
+      case "user.updated": {
+        const userData = {
+          _id: id,
+          email: email_addresses?.[0]?.email_address || "",
+          username: `${first_name || ""} ${last_name || ""}`.trim(),
+          image: image_url,
+          role: "user", // 🔧 explicitly set to match enum
+          recentSearchedCities: [],
+        };
         await User.findByIdAndUpdate(id, userData, { new: true, upsert: true });
         break;
-      case "user.deleted":
+      }
+      case "user.deleted": {
         await User.findByIdAndDelete(id);
         break;
+      }
       default:
         console.log("Unhandled event type:", evt.type);
         break;

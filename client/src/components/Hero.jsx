@@ -1,8 +1,9 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { assets, cities } from "../assets/assets";
 import heroImage from "../assets/heroImage.jpg";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useAppContext } from "../context/AppContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -50,10 +51,30 @@ const Hero = () => {
     );
   }, []);
 
+  const {navigate, getToken, axios, setSearchCities} = useAppContext()
+  const [destination, setDestination] = useState("")
+
+  const onSearch = async (e)=>{
+    e.preventDefault();
+    navigate(`/rooms?destination=${destination}`)
+
+    // Call API to save recent searched city
+    await axios.post('/api/user/store-recent-search', {recentSearchedCity:destination}, {headers: { Authorization: `Bearer ${await getToken()}`}});
+
+    // Add destination to searchedCities max 3 recent searched cities
+    setSearchCities((prevSearchedCities)=>{
+      const updatedSearchCities = [...prevSearchedCities, destination];
+      if (updatedSearchCities.length > 3){
+        updatedSearchCities.shift();
+      }
+      return updatedSearchCities;
+    })
+  }
+
   return (
     <>
-      <div className="bg-[var(--white-one)] h-screen flex flex-col items-center relative">
-        <div className="h-[75%] w-[80%] mt-[100px] rounded-[40px] relative shadow-2xl overflow-hidden">
+      <div className="bg-[var(--white-one)] h-[120vh] flex flex-col items-center relative md:h-screen">
+        <div className="h-[75%] w-[90%] md:w-[80%] mt-[100px] rounded-[40px] relative shadow-2xl overflow-hidden">
           <img
             src={heroImage}
             className="w-full h-full object-cover rounded-[40px] "
@@ -69,7 +90,7 @@ const Hero = () => {
                 The Ultimate Hotel Experience
               </span>
             </p>
-            <h2 className="text-2xl md:text-5xl font-bold md:leading-[60px]">
+            <h2 className="text-xl md:text-4xl lg:text-5xl font-bold md:leading-[40px] lg:leading-[60px]">
               <span className="line-wrapper overflow-hidden block">
                 <span className="line inline-block">Discover Your</span>
               </span>
@@ -87,14 +108,14 @@ const Hero = () => {
           </div>
         </div>
 
-        <div className="booking-form absolute z-10 bottom-14">
-          <form className="bg-[var(--glass-one)] backdrop-blur-md rounded-xl border border-white/10 shadow-lg text-[var(--black-one)] px-6 py-4 grid grid-cols-1 md:grid-cols-2 lg:flex gap-4 max-md:mx-auto">
+        <div className="booking-form absolute z-10 bottom-0 md:bottom-5 lg:bottom-14">
+          <form onSubmit={onSearch} className="bg-[var(--glass-one)] backdrop-blur-md rounded-xl border border-white/10 shadow-lg text-[var(--black-one)] px-6 py-4 grid grid-cols-1 md:grid-cols-2 lg:flex gap-4 max-md:mx-auto">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-[12px] md:text-sm">
                 <img src={assets.calenderIcon} alt="" className="h-4" />
                 <label htmlFor="destinationInput">Destination</label>
               </div>
-              <input
+              <input onChange={e=> setDestination(e.target.value)} value={destination}
                 list="destinations"
                 id="destinationInput"
                 type="text"
@@ -110,7 +131,7 @@ const Hero = () => {
             </div>
 
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-[12px] md:text-sm">
                 <img src={assets.calenderIcon} alt="" className="h-4" />
                 <label htmlFor="checkIn">Check in</label>
               </div>
@@ -122,7 +143,7 @@ const Hero = () => {
             </div>
 
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-[12px] md:text-sm">
                 <img src={assets.calenderIcon} alt="" className="h-4" />
                 <label htmlFor="checkOut">Check out</label>
               </div>
@@ -133,7 +154,7 @@ const Hero = () => {
               />
             </div>
 
-            <div className="flex gap-3 justify-center items-center">
+            <div className="flex gap-3 justify-center items-center text-[12px] md:text-sm">
               <div className="flex md:flex-col max-md:gap-2 max-md:items-center">
                 <label htmlFor="guests">Guests</label>
                 <input
@@ -145,7 +166,7 @@ const Hero = () => {
                   placeholder="0"
                 />
               </div>
-              <button className="flex items-center justify-center gap-1 rounded-xl bg-[var(--black-one)] py-3 px-4 text-[var(--white-one)] my-auto cursor-pointer max-md:w-full max-md:py-1">
+              <button className="flex items-center justify-center gap-1 rounded-xl bg-[var(--black-one)] py-3 px-4 text-[var(--white-one)] my-auto cursor-pointer max-md:w-full max-md:py-1 text-[12px] md:text-xs">
                 <img
                   src={assets.searchIcon}
                   alt="search"

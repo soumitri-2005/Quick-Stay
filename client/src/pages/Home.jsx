@@ -5,11 +5,13 @@ import Exclusive0ffers from "../components/Exclusive0ffers";
 import Testmonial from "../components/Testmonial";
 import NewsLetter from "../components/NewsLetter";
 import Footer from "../components/Footer";
+import RecommendedHotels from "../components/RecommendedHotels";
 
 const Home = ({ theme }) => {
   return (
     <>
       <Hero />
+      <RecommendedHotels/>
       <FeaturedDestination theme={theme} />
       <Exclusive0ffers />
       <Testmonial />

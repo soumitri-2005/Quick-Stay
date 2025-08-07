@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { assets } from "../assets/assets";
-import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
+import { useClerk, UserButton } from "@clerk/clerk-react";
 import "@theme-toggles/react/css/Expand.css";
 import { Expand } from "@theme-toggles/react";
 import { useLocalStorage } from "usehooks-ts";
+import { useAppContext } from "../context/AppContext";
 
 const BookIcon = () => (
   <svg
@@ -27,7 +28,7 @@ const BookIcon = () => (
 );
 
 const Navbar = ({ theme, switchTheme }) => {
-  // for toggle btn 
+  // for toggle btn
   const [isToggled, setToggle] = useLocalStorage("theme-toggle", false);
   useEffect(() => {
     if (isToggled) {
@@ -48,9 +49,9 @@ const Navbar = ({ theme, switchTheme }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { openSignIn } = useClerk();
-  const { user } = useUser();
-  const navigate = useNavigate();
   const loaction = useLocation();
+
+  const { user, navigate, isOwner, setShowHotelReg } = useAppContext();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -96,15 +97,20 @@ const Navbar = ({ theme, switchTheme }) => {
             />
           </a>
         ))}
-        <button
-          onClick={() => navigate("/owner")}
-          className={`border px-4 py-1 text-sm font-light rounded-full hover:bg-[var(--black-one)] hover:text-[var(--white-one)] transition-all duration-200 cursor-pointer ${
-            isScrolled ? "text-[var(--black-one)]" : "text-[var(--black-one)]"
-          } transition-all`}
-        >
-          DashBoard
-        </button>
-        
+
+        {user && (
+          <button
+            onClick={() =>
+              isOwner ? navigate("/owner") : setShowHotelReg(true)
+            }
+            className={`border px-4 py-1 text-sm font-light rounded-full hover:bg-[var(--black-one)] hover:text-[var(--white-one)] transition-all duration-200 cursor-pointer ${
+              isScrolled ? "text-[var(--black-one)]" : "text-[var(--black-one)]"
+            } transition-all`}
+          >
+            {isOwner ? "DashBoard" : "List Your Hotel"}
+          </button>
+        )}
+
         {/* toggle btn */}
         <div onClick={switchTheme} className="cursor-pointer mt-1">
           <Expand
@@ -192,22 +198,14 @@ const Navbar = ({ theme, switchTheme }) => {
           </a>
         ))}
 
-        <div onClick={switchTheme} className="cursor-pointer mt-1">
-          <Expand
-            duration={750}
-            className="text-xl"
-            toggled={isToggled}
-            toggle={() => setToggle(!isToggled)}
-            style={{ color: isToggled ? "black" : "white" }}
-          />
-        </div>
-
         {user && (
           <button
-            onClick={() => navigate("/owner")}
+            onClick={() =>
+              isOwner ? navigate("/owner") : setShowHotelReg(true)
+            }
             className="border px-4 py-1 text-sm font-light rounded-full cursor-pointer transition-all hover:text-[var(--black-one)] hover:bg-[var(--white-one)] duration-200"
           >
-            Dashboard
+            {isOwner ? "DashBoard" : "List Your Hotel"}
           </button>
         )}
 
@@ -219,6 +217,16 @@ const Navbar = ({ theme, switchTheme }) => {
             Login
           </button>
         )}
+
+        <div onClick={switchTheme} className="cursor-pointer mt-1">
+          <Expand
+            duration={750}
+            className="text-xl"
+            toggled={isToggled}
+            toggle={() => setToggle(!isToggled)}
+            style={{ color: isToggled ? "black" : "white" }}
+          />
+        </div>
       </div>
     </nav>
   );

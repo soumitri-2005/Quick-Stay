@@ -10,9 +10,9 @@ const Exclusive0ffers = () => {
   useEffect(() => {
   gsap.fromTo(
     ".card",
-    { x: 100, opacity: 0 },
+    { y: 100, opacity: 0 },
     {
-      x: 0,
+      y: 0,
       opacity: 1,
       duration: 0.8,
       ease: "power3.out",

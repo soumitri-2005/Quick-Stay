@@ -13,6 +13,9 @@ import AddRoom from "./pages/hotelOwner/AddRoom";
 import ListRoom from "./pages/hotelOwner/ListRoom";
 import Experience from "./pages/Experience";
 import About from "./pages/About";
+import { Toaster } from "react-hot-toast";
+import { useAppContext } from "./context/AppContext";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 const App = () => {
   const isOwnerPath = useLocation().pathname.includes("owner");
@@ -24,24 +27,29 @@ const App = () => {
     setTheme(newTheme);
   };
 
+  const { showHotelReg } = useAppContext();
+
   return (
     <div data-theme={theme}>
+      <Toaster />
       {!isOwnerPath && <Navbar theme={theme} switchTheme={switchTheme} />}
-      {false && <HotelReg />}
+      {showHotelReg && <HotelReg />}
       <div className="min-h-[70vh]">
-        <Routes>
-          <Route path="/" element={<Home theme={theme} />} />
-          <Route path="/rooms" element={<AllRooms />} />
-          <Route path="/experience" element={<Experience theme={theme}  />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/rooms/:id" element={<RoomDetails />} />
-          <Route path="/my-bookings" element={<MyBookings />} />
-          <Route path="/owner" element={<Layout switchTheme={switchTheme}  />}>
-            <Route index element={<Dashboard />} />
-            <Route path="add-room" element={<AddRoom />} />
-            <Route path="list-room" element={<ListRoom />} />
-          </Route>
-        </Routes>
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<Home theme={theme} />} />
+            <Route path="/rooms" element={<AllRooms />} />
+            <Route path="/experience" element={<Experience theme={theme} />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/rooms/:id" element={<RoomDetails />} />
+            <Route path="/my-bookings" element={<MyBookings />} />
+            <Route path="/owner" element={<Layout switchTheme={switchTheme} />}>
+              <Route index element={<Dashboard />} />
+              <Route path="add-room" element={<AddRoom />} />
+              <Route path="list-room" element={<ListRoom />} />
+            </Route>
+          </Routes>
+        </ErrorBoundary>
       </div>
     </div>
   );
