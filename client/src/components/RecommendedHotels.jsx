@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
 import Title from "./Title";
-import HotelCard from "./HotelCard"; // ✅ Import the reusable card
+import HotelCard from "./HotelCard";
 import { useAppContext } from "../context/AppContext";
 
 const RecommendedHotels = () => {
-  const { rooms, searchCities } = useAppContext();
+  const { rooms = [], searchCities = [] } = useAppContext(); // default to empty arrays
   const [recommended, setRecommended] = useState([]);
 
   const filterHotels = () => {
+    if (!rooms.length || !searchCities.length) {
+      setRecommended([]); // no rooms or no search cities => empty recommended
+      return;
+    }
+
     const filteredHotels = rooms.filter((room) =>
       searchCities.includes(room.hotel.city)
     );
