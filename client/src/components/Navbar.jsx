@@ -2,10 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { assets } from "../assets/assets";
 import { useClerk, UserButton } from "@clerk/clerk-react";
-import "@theme-toggles/react/css/Expand.css";
-import { Expand } from "@theme-toggles/react";
-import { useLocalStorage } from "usehooks-ts";
 import { useAppContext } from "../context/AppContext";
+import ThemeToggle from "./ThemeToggle";
 
 const BookIcon = () => (
   <svg
@@ -28,15 +26,6 @@ const BookIcon = () => (
 );
 
 const Navbar = ({ theme, switchTheme }) => {
-  // for toggle btn
-  const [isToggled, setToggle] = useLocalStorage("theme-toggle", false);
-  useEffect(() => {
-    if (isToggled) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isToggled]);
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -112,14 +101,8 @@ const Navbar = ({ theme, switchTheme }) => {
         )}
 
         {/* toggle btn */}
-        <div onClick={switchTheme} className="cursor-pointer mt-1">
-          <Expand
-            duration={750}
-            className="text-xl"
-            toggled={isToggled}
-            toggle={() => setToggle(!isToggled)}
-            style={{ color: isToggled ? "black" : "white" }}
-          />
+        <div className="cursor-pointer mt-1">
+          <ThemeToggle theme={theme} switchTheme={switchTheme} />
         </div>
       </div>
 
@@ -218,14 +201,8 @@ const Navbar = ({ theme, switchTheme }) => {
           </button>
         )}
 
-        <div onClick={switchTheme} className="cursor-pointer mt-1">
-          <Expand
-            duration={750}
-            className="text-xl"
-            toggled={isToggled}
-            toggle={() => setToggle(!isToggled)}
-            style={{ color: isToggled ? "black" : "white" }}
-          />
+        <div className="cursor-pointer mt-1">
+          <ThemeToggle theme={theme} switchTheme={switchTheme} />
         </div>
       </div>
     </nav>
