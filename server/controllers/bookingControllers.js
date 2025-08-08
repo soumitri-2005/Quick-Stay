@@ -2,6 +2,7 @@ import transporter from "../configs/nodemailer.js";
 import Booking from "../models/Booking.js";
 import Hotel from "../models/Hotel.js";
 import Room from "../models/Room.js";
+import stripe from "stripe";
 
 // function to check availablity of rooms
 const checkAvailability = async ({ checkInDate, checkOutDate, room }) => {
@@ -76,7 +77,7 @@ export const createBooking = async (req, res) => {
     const mailOptions = {
       from: process.env.SENDER_EMAIL,
       to: req.user.email,
-      subject: 'Hotel Booking Details',
+      subject: "Hotel Booking Details",
       html: `
         <h2>Your Booking Details</h2>
         <p>Dear ${req.user.username},</p>
@@ -86,13 +87,15 @@ export const createBooking = async (req, res) => {
           <li><strong>Hotel Name:</strong> ${roomData.hotel.name}</li>
           <li><strong>Location:</strong> ${roomData.hotel.address}</li>
           <li><strong>Date:</strong> ${booking.checkInDate.toDateString()}</li>
-          <li><strong>Booking Amount:</strong> ${process.env.CURRENCY || '$'} ${booking.totalPrice} /night</li>
+          <li><strong>Booking Amount:</strong> ${process.env.CURRENCY || "$"} ${
+        booking.totalPrice
+      } /night</li>
         </ul>
         <p>We look forward to welcoming you!</p>
         <p>If you need to make any changes, feel free to contact us.</p>
-      `
-    }
-    await transporter.sendMail(mailOptions)
+      `,
+    };
+    await transporter.sendMail(mailOptions);
 
     res.json({ success: true, message: "Booking Created Successfully" });
   } catch (error) {
@@ -138,5 +141,53 @@ export const getHotelBookings = async (req, res) => {
     });
   } catch (error) {
     res.json({ success: false, message: "failed to fetch bookings" });
+  }
+};
+
+export const stripePayment = async (req, res) => {
+  try {
+    const { bookingId } = req.body;
+
+    const booking = await Booking.findById(bookingId);
+    if (!booking) {
+      return res.json({ success: false, message: "Booking not found" });
+    }
+
+    const roomData = await Room.findById(booking.room).populate("hotel");
+    if (!roomData || !roomData.hotel) {
+      return res.json({ success: false, message: "Room or hotel data not found" });
+    }
+
+    const totalPrice = booking.totalPrice;
+    const { origin } = req.headers;
+
+    const stripeInstance = new stripe(process.env.STRIPE_SECRET_KEY);
+    const line_items = [
+      {
+        price_data: {
+          currency: "usd",
+          product_data: {
+            name: roomData.hotel.name,
+          },
+          unit_amount: totalPrice * 100,
+        },
+        quantity: 1,
+      },
+    ];
+
+    const session = await stripeInstance.checkout.sessions.create({
+      line_items,
+      mode: "payment",
+      success_url: `${origin}/loader/my-bookings`,
+      cancel_url: `${origin}/my-bookings`,
+      metadata: {
+        bookingId,
+      },
+    });
+
+    res.json({ success: true, url: session.url });
+  } catch (error) {
+    console.error(error); // log for debugging
+    res.json({ success: false, message: "Payment failed" });
   }
 };

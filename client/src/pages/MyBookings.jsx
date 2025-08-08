@@ -1,32 +1,50 @@
 import React, { useState, useEffect } from "react";
 import Title from "../components/Title";
-import {assets} from "../assets/assets";
+import { assets } from "../assets/assets";
 import { useAppContext } from "../context/AppContext";
 import toast from "react-hot-toast";
 
 const MyBookings = () => {
-
   const { axios, getToken, user } = useAppContext();
   const [bookings, setBookings] = useState([]);
 
-  const fetchUserBookings = async ()=>{
+  const fetchUserBookings = async () => {
     try {
-      const { data } = await axios.get('/api/bookings/user', {headers: {Authorization: `Bearer ${await getToken()}` }})
-      if (data.success){
-        setBookings(data.bookings)
-      }else{
-        toast.error(data.message)
+      const { data } = await axios.get("/api/bookings/user", {
+        headers: { Authorization: `Bearer ${await getToken()}` },
+      });
+      if (data.success) {
+        setBookings(data.bookings);
+      } else {
+        toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.message);
     }
-  }
+  };
 
-useEffect(()=>{
-  if(user){
-    fetchUserBookings()
-  }
-}, [user])
+  const handlePayment = async (bookingId) => {
+    try {
+      const { data } = await axios.post(
+        "/api/bookings/stripe-payment",
+        { bookingId },
+        { headers: { Authorization: `Bearer ${await getToken()}` } }
+      );
+      if (data.success) {
+        window.location.href = data.url;
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchUserBookings();
+    }
+  }, [user]);
 
   return (
     <div className="py-28 md:pb-36 md:pt-32 px-4 md:px-16 lg:px-24 xl:px-32 text-[var(--black-one)] bg-[var(--white-one)]">
@@ -112,6 +130,7 @@ useEffect(()=>{
               </div>
               {!booking.isPaid && (
                 <button
+                  onClick={() => handlePayment(booking._id)}
                   className="px-4 py-1.5 mt-4 text-xs border border-gray-400
               rounded-full text-[var(--black-one)] bg-[var(--white-one)] hover:text-[var(--white-one)] hover:bg-[var(--black-one)] transition-all cursor"
                 >
