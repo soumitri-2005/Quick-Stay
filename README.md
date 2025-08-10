@@ -1,4 +1,5 @@
-<img width="1915" height="1079" alt="Screenshot 2025-08-10 114118" src="https://github.com/user-attachments/assets/fa0a119f-fe9f-4a22-8097-1bb3a0393b87" /># 🏨 QuickStay — Hotel Booking System
+<img width="1915" height="1079" alt="Screenshot 2025-08-10 114118" src="https://github.com/user-attachments/assets/fa0a119f-fe9f-4a22-8097-1bb3a0393b87" /> 
+# 🏨 QuickStay — Hotel Booking System
 
 **QuickStay** is a modern, user-friendly hotel booking platform built by a team of four passionate developers.  
 Our goal was to create a smooth, intuitive, and responsive system where users can easily search, filter, and book hotels with just a few clicks.  
