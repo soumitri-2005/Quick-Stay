@@ -7,8 +7,6 @@ Our goal was to create a smooth, intuitive, and responsive system where users ca
 
 ---
 
-<img width="1915" height="1079" alt="Screenshot 2025-08-10 114118" src="https://github.com/user-attachments/assets/6b700794-6766-4eb3-9231-9a1f5ee829ae" />
-
 ## ✨ Features
 
 - 🔍 **Hotel Search & Filtering** — Find hotels by city, price, and room type.
