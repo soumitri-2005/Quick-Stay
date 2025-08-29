@@ -125,7 +125,7 @@ const MyBookings = () => {
                     booking.isPaid ? "text-green-500" : "text-red-500"
                   }`}
                 >
-                  {booking.isPaid ? "paid" : "Unpaid"}
+                  {booking.isPaid ? "Paid" : "Unpaid"}
                 </p>
               </div>
               {!booking.isPaid && (

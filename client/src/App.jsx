@@ -16,7 +16,7 @@ import About from "./pages/About";
 import { Toaster } from "react-hot-toast";
 import { useAppContext } from "./context/AppContext";
 import ErrorBoundary from "./components/ErrorBoundary";
-import Loader from "./components/Loader";
+import JotformChatbot from "./components/JotformChatbot";
 
 const App = () => {
   const isOwnerPath = useLocation().pathname.includes("owner");
@@ -44,7 +44,6 @@ const App = () => {
             <Route path="/about" element={<About />} />
             <Route path="/rooms/:id" element={<RoomDetails />} />
             <Route path="/my-bookings" element={<MyBookings />} />
-            <Route path="/loader/:nextUrl" element={<Loader />} />
             <Route path="/owner" element={<Layout switchTheme={switchTheme} />}>
               <Route index element={<Dashboard />} />
               <Route path="add-room" element={<AddRoom />} />
@@ -53,6 +52,7 @@ const App = () => {
           </Routes>
         </ErrorBoundary>
       </div>
+      {!isOwnerPath && <JotformChatbot />}
     </div>
   );
 };
